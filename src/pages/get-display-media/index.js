@@ -45,28 +45,17 @@ const GetDisplayMedia = ({ form }) => {
   const [videoInfo, setVideoInfo] = React.useState(null)
 
   React.useEffect(() => {
-    const onSubmit = async () => {
-      if (loading) {
-        return
-      }
-      setLoading(true)
-      stopStreamTracks(stream)
-      setStream(null)
-      if (!constraints) {
-        setLoading(false)
-        return;
-      }
-      const mediaStream = await getDisplayMedia(constraints)
-      // if (!loading) {
-      //   return
-      // }
+    setLoading(true)
+    setStream(null)
+    if (!constraints) {
+      setLoading(false)
+      return;
+    }
+    getDisplayMedia(constraints).then(mediaStream => {
       setStream(mediaStream)
       setLoading(false)
-    }
-    onSubmit()
-    return () => {
-      // setLoading(false)
-    }
+    })
+    // return () => {}
   }, [constraints])
 
   React.useEffect(() => {
@@ -75,10 +64,24 @@ const GetDisplayMedia = ({ form }) => {
       videoRef.current.srcObject = stream
     }
     return () => {
-      // stopStreamTracks(stream)
-      // setStream(null)
+      stopStreamTracks(stream)
+      setVideoInfo(null)
     }
   }, [stream])
+
+  const onBeforeunload = () => {
+    stopStreamTracks(stream)
+  };
+
+  React.useEffect(() => {
+    window.addEventListener('beforeunload', onBeforeunload)
+    return () => {
+      stopStreamTracks(stream)
+      setStream(null)
+      setLoading(false)
+      window.removeEventListener('beforeunload', onBeforeunload)
+    }
+  }, [])
 
   const onTimeUpdate = e => {
     const current = {
