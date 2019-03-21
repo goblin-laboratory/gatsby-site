@@ -1,9 +1,10 @@
 {
-  "name": "gatsby-starter-default",
+  "name": "gatsby-website",
   "private": false,
   "description": "A simple starter to get up and developing quickly with Gatsby",
   "version": "0.1.0",
-  "author": "Kyle Mathews <mathews.kyle@gmail.com>",
+  "homepage": "https://goblin-laboratory.github.io/gatsby-site/",
+  "author": "xiaosong <kunkkaco@gmail.com>",
   "dependencies": {
     "antd": "^3.15.1",
     "gatsby": "^2.1.31",
@@ -29,18 +30,17 @@
   "license": "MIT",
   "scripts": {
     "build": "gatsby build",
-    "develop": "gatsby develop",
-    "publish": "gatsby build --prefix-paths && gh-pages -d public",
+    "develop": "gatsby build --prefix-paths && gh-pages -d public",
     "format": "prettier --write src/**/*.{js,jsx}",
-    "start": "npm run develop",
+    "start": "gatsby develop",
     "serve": "gatsby serve",
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\""
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gatsbyjs/gatsby-starter-default"
+    "url": "https://github.com/goblin-laboratory/gatsby-site"
   },
   "bugs": {
-    "url": "https://github.com/gatsbyjs/gatsby/issues"
+    "url": "https://github.com/goblin-laboratory/gatsby-site/issues"
   }
 }

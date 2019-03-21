@@ -43,8 +43,16 @@ const GetDisplayMedia = ({ form }) => {
   const [constraints, setConstraints] = React.useState(null)
   const [stream, setStream] = React.useState(null)
   const [videoInfo, setVideoInfo] = React.useState(null)
+  const loadingRef = React.useRef(loading)
 
   React.useEffect(() => {
+    loadingRef.current = loading
+  }, [loading])
+
+  React.useEffect(() => {
+    if (loadingRef.current) {
+      return;
+    }
     setLoading(true)
     setStream(null)
     if (!constraints) {
@@ -52,10 +60,13 @@ const GetDisplayMedia = ({ form }) => {
       return;
     }
     getDisplayMedia(constraints).then(mediaStream => {
+      if (!loadingRef.current) {
+        return;
+      }
       setStream(mediaStream)
       setLoading(false)
     })
-    // return () => {}
+    return () => {}
   }, [constraints])
 
   React.useEffect(() => {
@@ -69,23 +80,34 @@ const GetDisplayMedia = ({ form }) => {
     }
   }, [stream])
 
-  const onBeforeunload = () => {
+  // const onBeforeunload = () => {
+  //   stopStreamTracks(stream)
+  // };
+
+  const onBeforeunload = React.useCallback(() => {
     stopStreamTracks(stream)
-  };
+  }, [stream]);
 
   React.useEffect(() => {
-    window.addEventListener('beforeunload', onBeforeunload)
+    global.addEventListener('beforeunload', onBeforeunload)
     return () => {
-      stopStreamTracks(stream)
-      setStream(null)
+      global.removeEventListener('beforeunload', onBeforeunload)
+    }
+  }, [onBeforeunload])
+
+  React.useEffect(() => {
+    return () => {
+      setStream(s => {
+        stopStreamTracks(s)
+        return null
+      })
       setLoading(false)
-      window.removeEventListener('beforeunload', onBeforeunload)
     }
   }, [])
 
   const onTimeUpdate = e => {
     const current = {
-      frameCount: e.target.webkitDecodedFrameCount,
+      frameCount: e.target.webkitDecodedFrameCount || e.target.mozPaintedFrames,
       currentTime: e.target.currentTime,
     }
     const info = {
